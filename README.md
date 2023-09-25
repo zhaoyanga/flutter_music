@@ -2,13 +2,13 @@
 flutter 仿 网易云音乐
 接口使用的是 NeteaseCloudMusicApi项目  https://github.com/Binaryify/NeteaseCloudMusicApi
 目前完成了 歌单界面，我的界面部分，底部播放栏
-<img src="https://github.com/zhaoyanga/flutter_music/blob/master/1695639343456.png" width="210px">
+<!-- <img src="https://github.com/zhaoyanga/flutter_music/blob/master/1695639343456.png" width="210px">
 <img src="https://github.com/zhaoyanga/flutter_music/blob/master/1695639405825.png" width="210px">
-<img src="https://github.com/zhaoyanga/flutter_music/blob/master/1695639428077.png" width="210px">
+<img src="https://github.com/zhaoyanga/flutter_music/blob/master/1695639428077.png" width="210px"> -->
 
-<!-- ![发现](https://github.com/zhaoyanga/flutter_music/blob/master/1695639343456.png)
+![发现](https://github.com/zhaoyanga/flutter_music/blob/master/1695639343456.png)
 ![我的](https://github.com/zhaoyanga/flutter_music/blob/master/1695639405825.png)
-![歌单](https://github.com/zhaoyanga/flutter_music/blob/master/1695639428077.png) -->
+![歌单](https://github.com/zhaoyanga/flutter_music/blob/master/1695639428077.png)
 A new Flutter project.
 
 ## Getting Started
