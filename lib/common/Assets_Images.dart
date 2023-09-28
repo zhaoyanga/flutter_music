@@ -14,4 +14,5 @@ class AssetsImages {
   static const userLickBackgroundImgJpg = 'assets/images/user_lick_backgroundImg.jpg';
   static const loadingPng = 'assets/images/loading.png';
   static const emptyPng = 'assets/images/empty.png';
+  static const myImportPng = 'assets/images/my_import.png';
 }

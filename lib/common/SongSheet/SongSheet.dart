@@ -47,7 +47,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
     传入limit=50&offset=50，你会得到第51-100首歌曲
   */
   Map pageQuery = {
-    'limit': 9,
+    'limit': 20,
     'offset': 0,
   };
   // 歌单歌曲
@@ -66,7 +66,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
   Future<void> _loadMore() async {
     // 模拟加载更多操作
     await Future.delayed(const Duration(milliseconds: 300));
-    pageQuery['offset'] += 9;
+    pageQuery['offset'] += 20;
     setState(() {});
     getPlaylistTrack();
     _controller.finishLoad(IndicatorResult.success, true);
@@ -94,7 +94,8 @@ class _SongSheetPageState extends State<SongSheetPage> {
 
   // 获取歌单详情
   void getDetail() {
-    Http.get('getPlaylistDynamic', params: {'id': 798027839}).then((res) {
+    Http.get('getPlaylistDynamic', params: {'id': widget.songSheetInfo['id']})
+        .then((res) {
       if (res['code'] != 200) return;
       // 评论
       _playListInfo['commentCount'] = res['commentCount'];
@@ -102,11 +103,13 @@ class _SongSheetPageState extends State<SongSheetPage> {
       _playListInfo['playCount'] = res['playCount'];
       // 分享次数
       _playListInfo['shareCount'] = res['shareCount'];
+      // 收藏次数
+      _playListInfo['bookedCount'] = res['bookedCount'];
       setState(() {});
     });
   }
 
-  bool aaa = true;
+  String removeBacklash(String data) => data.replaceAll("\n", "");
 
   void getPlaylistTrack() {
     pageQuery['id'] = widget.songSheetInfo['id'];
@@ -132,8 +135,9 @@ class _SongSheetPageState extends State<SongSheetPage> {
         
           如果下面还有歌曲，就让滚动到最下面
          */
-        if ((pageQuery['offset'] + pageQuery['limit']) <
-            widget.songSheetInfo['trackCount']) {
+        if (pageQuery['offset'] != 0 &&
+            (pageQuery['offset'] + pageQuery['limit']) <
+                widget.songSheetInfo['trackCount']) {
           SchedulerBinding.instance.addPostFrameCallback((_) {
             _scrollController.animateTo(
               _scrollController.position.maxScrollExtent,
@@ -230,7 +234,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
   @override
   Widget build(BuildContext context) {
     Adapt.initialize(context);
-    final barHeight = MediaQueryData.fromWindow(window).padding.top; // 获取状态栏高度
+    final barHeight = MediaQueryData.fromView(window).padding.top; // 获取状态栏高度
     final size = MediaQuery.of(context).size;
     return Scaffold(
         bottomNavigationBar: widget.states.playStatus
@@ -333,7 +337,10 @@ class _SongSheetPageState extends State<SongSheetPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "我喜欢的音乐",
+                                      widget.songSheetInfo.isNotEmpty
+                                          ? replaceName(
+                                              widget.songSheetInfo['name'])
+                                          : '',
                                       style: TextStyle(
                                         fontSize: Adapt.pt(14),
                                         fontWeight: FontWeight.bold,
@@ -399,7 +406,40 @@ class _SongSheetPageState extends State<SongSheetPage> {
                             ),
                           ],
                         ),
-                        SizedBox(height: Adapt.pt(24)),
+                        widget.songSheetInfo['description'] != null
+                            ? Container(
+                                padding: EdgeInsets.only(top: Adapt.pt(10)),
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        widget.songSheetInfo['description'] !=
+                                                ''
+                                            ? removeBacklash(widget
+                                                .songSheetInfo['description'])
+                                            : '暂无简介',
+                                        style: TextStyle(
+                                          color: const Color(0xffe1d8d9),
+                                          fontSize: Adapt.pt(12),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(0xffe1d8d9),
+                                      size: 14,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        SizedBox(
+                            height: Adapt.pt(
+                                widget.songSheetInfo['description'] != null
+                                    ? 14
+                                    : 24)),
                         Row(
                           children: [
                             Expanded(
@@ -429,7 +469,8 @@ class _SongSheetPageState extends State<SongSheetPage> {
                               child: MyButton(
                                 fn: (context) {},
                                 icon: Icons.library_add_check,
-                                text: "收藏",
+                                text:
+                                    "${_playListInfo['bookedCount'] != 0 && _playListInfo['bookedCount'] != null ? _playListInfo['bookedCount'] : '收藏'}",
                                 style: buttonStyle,
                               ),
                             ),
@@ -457,14 +498,12 @@ class _SongSheetPageState extends State<SongSheetPage> {
                     InkWell(
                       onTap: () async {
                         List musicData = [];
-                        // String url = await getMusicUrl(_playList[1]['id']);
                         for (int i = 0; i < _playList.length; i++) {
                           String url = await getMusicUrl(_playList[i]['id']);
                           musicData.add({
                             'id': _playList[i]['id'],
                             'imgUrl': _playList[i]['al']['picUrl'],
                             "url": url,
-                            // "url": i == 1 ? url : '',
                             "name": _playList[i]['name'],
                           });
                         }
@@ -497,7 +536,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
                                   fontWeight: FontWeight.bold,
                                   fontSize: Adapt.pt(16))),
                           SizedBox(width: Adapt.pt(6)),
-                          Text("${widget.songSheetInfo['trackCount']}",
+                          Text("(${widget.songSheetInfo['trackCount']})",
                               style: TextStyle(fontSize: Adapt.pt(10))),
                         ],
                       ),
@@ -591,5 +630,11 @@ class _SongSheetPageState extends State<SongSheetPage> {
   void _onShare(BuildContext context) async {
     Share.share('check out my website https://example.com',
         subject: 'Look what I made!');
+  }
+
+  String replaceName(String name) {
+    if (!name.endsWith('喜欢的音乐')) return name;
+    String newStr = name.replaceAll("火火鲨", "我");
+    return newStr;
   }
 }

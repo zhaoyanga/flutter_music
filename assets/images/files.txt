@@ -8,6 +8,7 @@ static const findActivePng = 'assets/images/find_active.png';
 static const loadingPng = 'assets/images/loading.png';
 static const myPng = 'assets/images/my.png';
 static const myActivePng = 'assets/images/my_active.png';
+static const myImportPng = 'assets/images/my_import.png';
 static const splachJpeg = 'assets/images/splach.jpeg';
 static const userImgJpg = 'assets/images/userImg.jpg';
 static const userLickBackgroundImgJpg = 'assets/images/user_lick_backgroundImg.jpg';
