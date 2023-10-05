@@ -7,9 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CardItemMode extends StatefulWidget {
   const CardItemMode(
-      {super.key, required this.songSheetInfo, this.isHeartRate = false});
+      {super.key,
+      required this.songSheetInfo,
+      this.isHeartRate = false,
+      required this.modalList});
   final Map songSheetInfo;
   final bool isHeartRate;
+  final List modalList;
   @override
   State<CardItemMode> createState() => _CardItemMode();
 }
@@ -42,9 +46,11 @@ class _CardItemMode extends State<CardItemMode> {
                   MaterialPageRoute(
                     builder: (context) => BlocBuilder<AppConfigBloc, AppConfig>(
                       builder: (_, state) => SongSheetPage(
-                          states: state,
-                          isNoCachePage: true,
-                          songSheetInfo: widget.songSheetInfo),
+                        states: state,
+                        isNoCachePage: true,
+                        songSheetInfo: widget.songSheetInfo,
+                        modalList: widget.modalList,
+                      ),
                     ),
                   ),
                 );
@@ -52,70 +58,65 @@ class _CardItemMode extends State<CardItemMode> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: Adapt.pt(48),
-                        height: Adapt.pt(48),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Adapt.pt(12)),
-                          image: DecorationImage(
-                            image: NetworkImage(widget.songSheetInfo.isNotEmpty
-                                ? widget.songSheetInfo['coverImgUrl']
-                                : ''),
-                            fit: BoxFit.cover,
-                          ),
-                          border: Border.all(
-                            width: 0.3,
-                            color: const Color(0xffff7f7f7f),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: Adapt.pt(48),
+                          height: Adapt.pt(48),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Adapt.pt(12)),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  widget.songSheetInfo.isNotEmpty
+                                      ? widget.songSheetInfo['coverImgUrl']
+                                      : ''),
+                              fit: BoxFit.cover,
+                            ),
+                            border: Border.all(
+                              width: 0.3,
+                              color: const Color(0xffff7f7f7f),
+                            ),
                           ),
                         ),
-                        // 蒙版爱心
-                        // child: Container(
-                        //   decoration: BoxDecoration(
-                        //     color: Colors.black.withOpacity(0.4),
-                        //     borderRadius: BorderRadius.circular(Adapt.pt(12)),
-                        //   ),
-                        //   child: const Icon(
-                        //     Icons.favorite,
-                        //     color: Colors.white,
-                        //   ),
-                        // ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
+                        const SizedBox(width: 12),
+                        Expanded(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
                               widget.songSheetInfo.isNotEmpty
                                   ? replaceName(widget.songSheetInfo['name'])
                                   : '',
                               style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Text(
-                                widget.songSheetInfo.isNotEmpty
-                                    ? "${widget.songSheetInfo['trackCount']}首"
-                                    : '0首',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Color(0xff8c8e8e)),
-                              ),
-                              Text(
-                                widget.songSheetInfo.isNotEmpty &&
-                                        !widget.songSheetInfo['name']
-                                            .startsWith('火火鲨')
-                                    ? "，by ${widget.songSheetInfo['creator']['nickname']}"
-                                    : '',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Color(0xff8c8e8e)),
-                              ),
-                            ],
-                          )
-                        ],
-                      )
-                    ],
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Text(
+                                  widget.songSheetInfo.isNotEmpty
+                                      ? "${widget.songSheetInfo['trackCount']}首"
+                                      : '0首',
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Color(0xff8c8e8e)),
+                                ),
+                                Text(
+                                  widget.songSheetInfo.isNotEmpty &&
+                                          !widget.songSheetInfo['name']
+                                              .startsWith('火火鲨')
+                                      ? "，by ${widget.songSheetInfo['creator']['nickname']}"
+                                      : '',
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Color(0xff8c8e8e)),
+                                ),
+                              ],
+                            )
+                          ],
+                        ))
+                      ],
+                    ),
                   ),
                   widget.isHeartRate
                       ? Container(

@@ -15,10 +15,7 @@ class AppConfigBloc extends Cubit<AppConfig> {
 
   // 保存播放歌曲对象
   void switchMusicData(List musicData) {
-    // List test = List.from(musicData);
-    // if (!listEquals(test, state.playMusicData)) {
     emit(state.copyWith(musicData: musicData, isPlayStatus: true));
-    // }
   }
 
   // 设置当前播放音乐Url
@@ -28,7 +25,7 @@ class AppConfigBloc extends Cubit<AppConfig> {
     for (int i = 0; i < musicData.length; i++) {
       if (i == index) {
         String url = await getMusicUrl(id);
-        musicData[i]['url'] = url;
+        musicData[index]['url'] = url;
       }
     }
     emit(state.copyWith(musicData: musicData));

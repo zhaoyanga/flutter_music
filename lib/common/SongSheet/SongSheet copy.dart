@@ -1,20 +1,16 @@
 import 'package:daoniao_music/utils/request.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import '../../utils/ShowModalBottomSheet.dart';
 import '../../utils/public_request.dart';
 import '../Adapt.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:ui';
 import '../ColorUtils.dart';
-import '../Comment.dart';
 import '../Header.dart';
 import '../LoadStateLayout.dart';
 import '../MyButton.dart';
 import '../Playbar.dart';
 import '../Totas.dart';
-import 'SongDetail.dart';
 import 'all_mask.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import '../SimpleEasyRefresher.dart';
@@ -28,12 +24,10 @@ class SongSheetPage extends StatefulWidget {
     required this.states,
     required this.isNoCachePage,
     required this.songSheetInfo,
-    required this.modalList,
   });
   final AppConfig states;
   final bool isNoCachePage;
   final Map songSheetInfo;
-  final List modalList;
   @override
   State<SongSheetPage> createState() => _SongSheetPageState();
 }
@@ -53,7 +47,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
     传入limit=50&offset=50，你会得到第51-100首歌曲
   */
   Map pageQuery = {
-    'limit': 9999,
+    'limit': 20,
     'offset': 0,
   };
   // 歌单歌曲
@@ -72,8 +66,8 @@ class _SongSheetPageState extends State<SongSheetPage> {
   Future<void> _loadMore() async {
     // 模拟加载更多操作
     await Future.delayed(const Duration(milliseconds: 300));
-    // pageQuery['offset'] += 99999;
-    // setState(() {});
+    pageQuery['offset'] += 20;
+    setState(() {});
     getPlaylistTrack();
     _controller.finishLoad(IndicatorResult.success, true);
   }
@@ -86,7 +80,6 @@ class _SongSheetPageState extends State<SongSheetPage> {
     super.initState();
   }
 
-  // 文字乱码问题
   static String breakWord(String word) {
     if (word.isEmpty) {
       return word;
@@ -118,10 +111,9 @@ class _SongSheetPageState extends State<SongSheetPage> {
 
   String removeBacklash(String data) => data.replaceAll("\n", "");
 
-  // 获取歌曲列表
   void getPlaylistTrack() {
     pageQuery['id'] = widget.songSheetInfo['id'];
-    Http.get('getPlaylistTrack', params: pageQuery).then((res) async {
+    Http.get('getPlaylistTrack', params: pageQuery).then((res) async{
       Future.delayed(const Duration(milliseconds: 1000));
       if (res is Map && res['code'] == 200) {
         if (_playList.isNotEmpty && res['songs'].isEmpty) {
@@ -162,7 +154,6 @@ class _SongSheetPageState extends State<SongSheetPage> {
     });
   }
 
-  // 歌曲列表
   Widget buildMusicList() {
     return SimpleEasyRefresher(
       easyRefreshController: _controller,
@@ -178,7 +169,6 @@ class _SongSheetPageState extends State<SongSheetPage> {
     );
   }
 
-  // 歌曲每一项
   Widget musicItem(int index) {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -216,18 +206,12 @@ class _SongSheetPageState extends State<SongSheetPage> {
                     // const Text("数字专辑"),
                     Expanded(
                       child: Text(
-                        breakWord(_playList[index]['ar'][0]['name'] +
-                            '-' +
-                            _playList[index]['al']['name']),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: Adapt.pt(12),
-                          color: const Color(
-                            0xffaeaeae,
-                          ),
-                        ),
-                      ),
+                          breakWord(_playList[index]['ar'][0]['name'] +
+                              '-' +
+                              _playList[index]['al']['name']),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: Adapt.pt(12))),
                     )
                   ],
                 )
@@ -273,7 +257,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                const Mask(),
+                Mask(),
                 Positioned(
                   top: barHeight,
                   child: HeaderWidget(
@@ -405,11 +389,10 @@ class _SongSheetPageState extends State<SongSheetPage> {
                                               Padding(
                                                 padding: EdgeInsets.only(
                                                     top: Adapt.pt(1)),
-                                                child: Icon(
+                                                child: const Icon(
                                                   Icons.arrow_forward_ios,
-                                                  color:
-                                                      const Color(0xffe1d8d9),
-                                                  size: Adapt.pt(14),
+                                                  color: Color(0xffe1d8d9),
+                                                  size: 14,
                                                 ),
                                               ),
                                             ],
@@ -443,21 +426,10 @@ class _SongSheetPageState extends State<SongSheetPage> {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SongDetail(),
-                                          ),
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: const Color(0xffe1d8d9),
-                                        size: Adapt.pt(14),
-                                      ),
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(0xffe1d8d9),
+                                      size: 14,
                                     ),
                                   ],
                                 ),
@@ -484,16 +456,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
                             Expanded(
                               flex: 1,
                               child: MyButton(
-                                fn: (context) {
-                                  CommentModalBottomSheet.showBottomModal(
-                                    context,
-                                    fn: switchCommentTitle,
-                                    songSheetInfo: widget.songSheetInfo,
-                                    commentCount:
-                                        _playListInfo['commentCount'] ?? 0,
-                                    type: 2,
-                                  );
-                                },
+                                fn: (context) {},
                                 icon: Icons.textsms,
                                 text:
                                     "${_playListInfo['commentCount'] != 0 && _playListInfo['commentCount'] != null ? _playListInfo['commentCount'] : '评论'}",
@@ -520,10 +483,10 @@ class _SongSheetPageState extends State<SongSheetPage> {
               ],
             ),
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(Adapt.pt(15)),
-                  topRight: Radius.circular(Adapt.pt(15)),
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15),
                 ),
               ),
               child: Padding(
@@ -535,18 +498,20 @@ class _SongSheetPageState extends State<SongSheetPage> {
                     InkWell(
                       onTap: () async {
                         List musicData = [];
-                        String url = await getMusicUrl(_playList[0]['id']);
                         for (int i = 0; i < _playList.length; i++) {
-                          musicData.add({
-                            'id': _playList[i]['id'],
-                            'imgUrl': _playList[i]['al']['picUrl'],
-                            "url": i == 0 && url != '' ? url : '',
-                            "name": _playList[i]['name'],
-                          });
+                          String url = await getMusicUrl(_playList[i]['id']);
+                          if (url != '') {
+                            musicData.add({
+                              'id': _playList[i]['id'],
+                              'imgUrl': _playList[i]['al']['picUrl'],
+                              "url": url,
+                              "name": _playList[i]['name'],
+                            });
+                          }
                         }
                         if (!mounted) return;
                         BlocProvider.of<AppConfigBloc>(context)
-                            .switchPlayIndex(0);
+                            .switchPlayIndex(1);
                         BlocProvider.of<AppConfigBloc>(context)
                             .switchMusicData(musicData);
                         BlocProvider.of<AppConfigBloc>(context)
@@ -615,12 +580,6 @@ class _SongSheetPageState extends State<SongSheetPage> {
         ));
   }
 
-  // 评论点击切换
-  void switchCommentTitle(int index) {
-    print(index);
-  }
-
-  // 功能按钮样式
   final buttonStyle = ButtonStyle(
     shape: MaterialStateProperty.all(
       RoundedRectangleBorder(
@@ -649,7 +608,6 @@ class _SongSheetPageState extends State<SongSheetPage> {
     ),
   );
 
-  // 顶部栏右侧图标
   Widget buildRightIcon() {
     return Row(
       children: [
@@ -661,16 +619,9 @@ class _SongSheetPageState extends State<SongSheetPage> {
           ),
         ),
         IconButton(
-          onPressed: () {
-            ShowModalBottomSheet.showBottomModal(context,
-                modalList: widget.modalList,
-                fn: bottomModalFn,
-                name: widget.songSheetInfo.isNotEmpty
-                    ? widget.songSheetInfo['name']
-                    : '');
-          },
+          onPressed: () {},
           icon: const Icon(
-            Icons.more_vert,
+            Icons.menu,
             color: Colors.white,
           ),
         )
@@ -678,24 +629,11 @@ class _SongSheetPageState extends State<SongSheetPage> {
     );
   }
 
-  // 底部栏每一项点击
-  void bottomModalFn(int index, Map item) {
-    if (item['mark'] == 'empty') {
-      Toast.show(
-          context: context,
-          message: "无下载文件",
-          color: Colors.black.withOpacity(0.6),
-          textColor: Colors.white);
-    }
-  }
-
-  // 分享
   void _onShare(BuildContext context) async {
     Share.share('check out my website https://example.com',
         subject: 'Look what I made!');
   }
 
-  // 替换名称
   String replaceName(String name) {
     if (!name.endsWith('喜欢的音乐')) return name;
     String newStr = name.replaceAll("火火鲨", "我");

@@ -15,4 +15,5 @@ class AssetsImages {
   static const loadingPng = 'assets/images/loading.png';
   static const emptyPng = 'assets/images/empty.png';
   static const myImportPng = 'assets/images/my_import.png';
+  static const lickPng = 'assets/images/lick.png';
 }

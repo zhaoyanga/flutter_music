@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Adapt.dart';
 import '../Assets_Images.dart';
 
 class ListInfo extends StatelessWidget {
@@ -23,12 +24,12 @@ class ListInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(element['icon'], color: Colors.white),
-              const SizedBox(width: 5),
-              const Text(
+              SizedBox(width: Adapt.pt(5)),
+              Text(
                 '111万',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: Adapt.pt(14),
                   height: 1,
                 ),
               ),
@@ -42,52 +43,53 @@ class ListInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Adapt.initialize(context);
     final size = MediaQuery.of(context).size;
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20),
-      padding: const EdgeInsets.all(5),
+      margin: EdgeInsets.symmetric(horizontal: Adapt.pt(20)),
+      padding: EdgeInsets.all(Adapt.pt(5)),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(Adapt.pt(10)),
         // color: Colors.black.withOpacity(.2),
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             '昭阳',
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: Adapt.pt(18),
               fontWeight: FontWeight.bold,
             ),
           ),
           Expanded(
             child: Container(
               alignment: Alignment.center,
-              margin: const EdgeInsets.all(2),
+              margin: EdgeInsets.all(Adapt.pt(2)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(Adapt.pt(10)),
                     child: Image.asset(
                       AssetsImages.splachJpeg,
                       fit: BoxFit.fill,
-                      width: 25,
-                      height: 25,
+                      width: Adapt.pt(25),
+                      height: Adapt.pt(25),
                     ),
                   ),
-                  const SizedBox(width: 5),
-                  const Text(
+                   SizedBox(width: Adapt.pt(5)),
+                   Text(
                     "火火鲨",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: Adapt.pt(14),
                       height: 1,
                     ),
                   ),
-                  const SizedBox(width: 5),
+                   SizedBox(width: Adapt.pt(5)),
                   InkWell(
                     highlightColor: Colors.transparent,
                     radius: 0.0,
@@ -95,14 +97,14 @@ class ListInfo extends StatelessWidget {
                       print('播放');
                     },
                     child: Container(
-                      padding: const EdgeInsets.only(left: 5, right: 5),
+                      padding: EdgeInsets.symmetric(horizontal: Adapt.pt(5)),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(Adapt.pt(10)),
                         color: Colors.grey.withOpacity(.4),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.add,
-                        size: 16,
+                        size: Adapt.pt(16),
                         color: Colors.white,
                       ),
                     ),
@@ -113,10 +115,10 @@ class ListInfo extends StatelessWidget {
           ),
           // 底部数据展示
           Container(
-            margin: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
-            padding: const EdgeInsets.all(5),
+            margin: EdgeInsets.only(left: Adapt.pt(20), right: Adapt.pt(20), bottom: Adapt.pt(10)),
+            padding: EdgeInsets.all(Adapt.pt(5)),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
+              borderRadius: BorderRadius.circular(Adapt.pt(20)),
               color: Colors.white.withOpacity(.2),
             ),
             child: Row(
@@ -170,31 +172,31 @@ class DayInfo extends StatelessWidget {
 
     return Column(
       children: [
-        const Text(
+         Text(
           '根据你的口味推荐',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: Adapt.pt(18),
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 5),
+         SizedBox(height: Adapt.pt(5)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               '${now.day} / ',
-              style: const TextStyle(
+              style:  TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: Adapt.pt(20),
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               '$month月',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 14,
+                fontSize: Adapt.pt(14),
                 fontWeight: FontWeight.bold,
               ),
             ),

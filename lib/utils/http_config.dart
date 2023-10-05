@@ -4,7 +4,7 @@ const String baseUrl = 'http://localhost:3000/';
 // 请求连接
 const Map urlPath = {
   'banner': 'banner', // 轮播图
-  'homepageDragonBall': '/homepage/dragon/ball', // 圆形图标
+  'homepageDragonBall': '/homepage/dragon/ball', // 首页圆形图标
   'getMusicList': '/song/url', // 获取音乐
   'getQrCodeKeyGenerate': '/login/qr/key', // 二维码 key 生成接口
   'getQrCodeGenerate': '/login/qr/create', // 二维码生成接口
@@ -15,6 +15,8 @@ const Map urlPath = {
   'getPlaylist': '/user/playlist', // 获取用户歌单
   'getPlaylistDynamic': '/playlist/detail/dynamic', // 获取歌单详情动态(分享次数等)
   'getPlaylistTrack': '/playlist/track/all', // 获取歌单内歌曲
+  'getRecommendResource': '/recommend/resource', // 获取每日推荐
+  'getSongComment': '/comment/new', // 获取歌单评论
 };
 
 // content-type

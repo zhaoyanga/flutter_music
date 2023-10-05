@@ -80,11 +80,13 @@ class Http {
     }
 
     if (method == 'POST') {
-      // 处理 https://test_api.com/user?id=123&name=zhangsan 请求连接
-      url += '?';
-      pathParams.forEach((key, value) {
-        url += '$key=$value&';
-      });
+      if (pathParams != null) {
+        // 处理 https://test_api.com/user?id=123&name=zhangsan 请求连接
+        url += '?';
+        pathParams.forEach((key, value) {
+          url += '$key=$value&';
+        });
+      }
     }
 
     Map headers = {};
@@ -190,9 +192,6 @@ class HttpException implements Exception {
   }
 
   Map aaa() {
-    return {
-      "code":code,
-      "message":message
-    };
+    return {"code": code, "message": message};
   }
 }

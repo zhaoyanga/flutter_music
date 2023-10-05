@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../common/Adapt.dart';
+import '../utils/request.dart';
 
 class DailRecommenDations extends StatefulWidget {
   const DailRecommenDations({super.key});
@@ -9,54 +10,90 @@ class DailRecommenDations extends StatefulWidget {
 }
 
 class _DailRecommenDationsState extends State<DailRecommenDations> {
+  List recommendSongs = [];
+
+  @override
+  void initState() {
+    getRecommendResource();
+    super.initState();
+  }
+
+  void getRecommendResource() {
+    Http.post('getRecommendResource', params: {}).then((res) {
+      setState(() {
+        recommendSongs = res['recommend'];
+      });
+    });
+  }
+
+  static String breakWord(String word) {
+    if (word.isEmpty) {
+      return word;
+    }
+    String breakWord = ' ';
+    for (var element in word.runes) {
+      breakWord += String.fromCharCode(element);
+      breakWord += '\u200B';
+    }
+    return breakWord;
+  }
+
   @override
   Widget build(BuildContext context) {
     Adapt.initialize(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Text(
-                  "推荐歌单",
-                  style: TextStyle(
-                    fontSize: Adapt.pt(18),
-                    fontWeight: FontWeight.bold,
+    return recommendSongs.isNotEmpty
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "推荐歌单",
+                        style: TextStyle(
+                          fontSize: Adapt.pt(18),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: Adapt.pt(2)),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: Adapt.pt(16),
+                        ),
+                      )
+                    ],
                   ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Color(0xffa6a5aa),
+                    ),
+                  )
+                ],
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.only(bottom: Adapt.pt(10)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: recommendSongs
+                      .asMap()
+                      .keys
+                      .map(buildResourceitem)
+                      .toList(),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: Adapt.pt(2)),
-                  child: Icon(
-                    Icons.arrow_forward_ios,
-                    size: Adapt.pt(16),
-                  ),
-                )
-              ],
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.format_align_justify),
-            )
-          ],
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.only(bottom: Adapt.pt(10)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children:
-                [0, 1, 2, 3, 4, 5].asMap().keys.map(buildResourceitem).toList(),
-          ),
-        )
-      ],
-    );
+              )
+            ],
+          )
+        : Container();
   }
 
   Widget buildResourceitem(int index) {
-    return Padding(
+    return Container(
       padding: EdgeInsets.only(right: Adapt.pt(18)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +106,7 @@ class _DailRecommenDationsState extends State<DailRecommenDations> {
             child: Stack(
               children: [
                 Image.network(
-                  'https://img1.baidu.com/it/u=3573056321,2239143646&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1692550800&t=95909218443a3c3fe4063928b3ceee50',
+                  recommendSongs[index]['picUrl'],
                   height: Adapt.pt(120.0),
                   width: Adapt.pt(120.0),
                   fit: BoxFit.fill,
@@ -96,24 +133,26 @@ class _DailRecommenDationsState extends State<DailRecommenDations> {
                                 size: Adapt.pt(12),
                               ),
                             ),
-                            const Text(
-                              "164.3亿",
-                              style: TextStyle(
+                            Text(
+                              "${recommendSongs[index]['trackCount']}",
+                              style: const TextStyle(
                                 color: Colors.white,
                               ),
                             )
                           ],
                         ),
                       ),
-                Positioned(
-                  right: Adapt.pt(5),
-                  bottom: Adapt.pt(2),
-                  child: Icon(
-                    Icons.play_arrow,
-                    color: Colors.white,
-                    size: Adapt.pt(32),
-                  ),
-                ),
+                index != 0
+                    ? Positioned(
+                        right: Adapt.pt(5),
+                        bottom: Adapt.pt(2),
+                        child: Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: Adapt.pt(32),
+                        ),
+                      )
+                    : Container(),
                 index != 0
                     ? Positioned(
                         left: Adapt.pt(5),
@@ -128,13 +167,17 @@ class _DailRecommenDationsState extends State<DailRecommenDations> {
               ],
             ),
           ),
-          Text(
-            "歌单歌单",
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            style: TextStyle(
-              fontSize: Adapt.pt(14),
-              fontWeight: FontWeight.w500,
+          SizedBox(
+            width: Adapt.pt(120.0),
+            height: Adapt.pt(40.0),
+            child: Text(
+              breakWord(recommendSongs[index]['name']),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: TextStyle(
+                fontSize: Adapt.pt(14),
+                fontWeight: FontWeight.w500,
+              ),
             ),
           )
         ],

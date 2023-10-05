@@ -5,7 +5,6 @@ import '../blob/app_config.dart';
 import '../blob/app_config_blob.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../controllers/playBarControllers.dart';
-import '../utils/public_request.dart';
 import 'Adapt.dart';
 
 class PlayBar extends StatefulWidget {
@@ -34,25 +33,25 @@ class _PlayBarState extends State<PlayBar> {
     });
     // 播放完毕
     widget.states.player.onPlayerComplete.listen((event) async {
-      switchMusicEnd();
+      widget.states.player.pause();
+      playbackMode(widget.states.playMode);
+      BlocProvider.of<AppConfigBloc>(context).switchPlay(false);
+      Future.delayed(const Duration(milliseconds: 300));
+      if (!mounted) return;
+      BlocProvider.of<AppConfigBloc>(context).switchPlay(true);
+      widget.states.player.resume();
+      // int id = widget.states.playMusicData[index]['id'];
+      // String url = await getMusicUrl(id);
+      // widget.states.player.setSource(UrlSource(url));
+      // widget.states.player.resume();
+      // if (!mounted) return;
+      // BlocProvider.of<AppConfigBloc>(context).switchPlay(true);
     });
     super.initState();
   }
 
-  switchMusicEnd() async {
-    widget.states.player.pause();
-    await playbackMode(widget.states.playMode);
-    if (!mounted) return;
-    BlocProvider.of<AppConfigBloc>(context).switchPlay(false);
-    Future.delayed(const Duration(milliseconds: 300));
-    await switchMusic();
-    widget.states.player.resume();
-    if (!mounted) return;
-    BlocProvider.of<AppConfigBloc>(context).switchPlay(true);
-  }
-
   // 播放模式
-  playbackMode(mode) {
+  void playbackMode(mode) {
     switch (mode) {
       case 1:
         if (index == (widget.states.playMusicData.length - 1)) {
@@ -69,6 +68,7 @@ class _PlayBarState extends State<PlayBar> {
             .switchPlayIndex(randomGen(0, widget.states.playMusicData.length));
         break;
     }
+    setState(() {});
   }
 
   randomGen(min, max) {
@@ -84,29 +84,32 @@ class _PlayBarState extends State<PlayBar> {
     BlocProvider.of<AppConfigBloc>(context).switchMusicUrl(index, id);
     widget.states.player
         .setSource(UrlSource(widget.states.playMusicData[index]['url']));
+    // BlocProvider.of<AppConfigBloc>(context).switchPlay(true);
+    // widget.states.player.resume();
   }
 
   @override
   Widget build(BuildContext context) {
     Adapt.initialize(context);
-    if (widget.states.playMusicData[index]['url'] != '' &&
-        index == widget.states.playIndex) {
-      if (!widget.isNoCachePage &&
-          widget.states.playStatus &&
-          widget.states.playMusicData.isNotEmpty) {
-        if (widget.states.playMusicData[index]['url'] != '') {
-          widget.states.player
-              .setSource(UrlSource(widget.states.playMusicData[index]['url']));
-        } else {
-          switchMusic();
-        }
+    setState(() {
+      index = widget.states.playIndex;
+    });
+    if (!widget.isNoCachePage &&
+        widget.states.playStatus &&
+        widget.states.playMusicData.isNotEmpty) {
+      if (widget.states.playMusicData[index]['url'] != '') {
+        widget.states.player
+            .setSource(UrlSource(widget.states.playMusicData[index]['url']));
+        // BlocProvider.of<AppConfigBloc>(context).switchPlay(true);
+        // widget.states.player.resume();
+      } else {
+        switchMusic();
+      }
 
-        if (widget.states.isPlaying) {
-          widget.states.player.resume();
-        }
+      if (widget.states.isPlaying) {
+        widget.states.player.resume();
       }
     }
-
     return widget.states.playStatus
         ? Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

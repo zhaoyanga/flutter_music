@@ -22,7 +22,6 @@ class LoadStateLayout extends StatefulWidget {
 }
 
 class _LoadStateLayoutState extends State<LoadStateLayout> {
-
   @override
   Widget build(BuildContext context) {
     Adapt.initialize(context);
@@ -60,9 +59,9 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
       child: Container(
         height: 80,
         padding: const EdgeInsets.all(10),
-        child: Column(
+        child: const Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: const <Widget>[
+          children: <Widget>[
             CircularProgressIndicator(
               color: Colors.black,
             ),

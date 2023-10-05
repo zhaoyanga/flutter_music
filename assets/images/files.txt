@@ -5,6 +5,7 @@ static const discoverPodcastsActivePng = 'assets/images/discover_podcasts_active
 static const emptyPng = 'assets/images/empty.png';
 static const findPng = 'assets/images/find.png';
 static const findActivePng = 'assets/images/find_active.png';
+static const lickPng = 'assets/images/lick.png';
 static const loadingPng = 'assets/images/loading.png';
 static const myPng = 'assets/images/my.png';
 static const myActivePng = 'assets/images/my_active.png';

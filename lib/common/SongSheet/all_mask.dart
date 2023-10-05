@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../Adapt.dart';
 import '../ColorUtils.dart';
 
 class AllPlay extends StatelessWidget {
@@ -12,6 +13,7 @@ class AllPlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Adapt.initialize(context);
     return InkWell(
       highlightColor: Colors.transparent,
       radius: 0.0,
@@ -19,18 +21,18 @@ class AllPlay extends StatelessWidget {
         print('播放');
       },
       child: Padding(
-        padding: const EdgeInsets.all(5),
+        padding: EdgeInsets.all(Adapt.pt(5)),
         child: Row(
           children: [
             Container(
-              margin: const EdgeInsets.only(right: 5),
+              margin: EdgeInsets.only(right: Adapt.pt(5)),
               decoration: BoxDecoration(
                 color: Colors.red,
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(Adapt.pt(20)),
               ),
-              child: const Padding(
-                padding: EdgeInsets.all(3),
-                child: Icon(
+              child: Padding(
+                padding: EdgeInsets.all(Adapt.pt(3)),
+                child: const Icon(
                   Icons.play_arrow,
                   size: 18.0,
                   color: Colors.white,
@@ -51,6 +53,8 @@ class AllPlay extends StatelessWidget {
 }
 
 class Mask extends StatelessWidget {
+  const Mask({super.key});
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;

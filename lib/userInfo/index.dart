@@ -9,6 +9,7 @@ import '../common/Assets_Images.dart';
 import '../common/CardItem.dart';
 import '../common/Playbar.dart';
 import '../sharedPreferences/index.dart';
+import '../utils/ShowModalBottomSheet.dart';
 import '../utils/request.dart';
 import 'userPresentation.dart';
 import 'userToolbar.dart';
@@ -154,12 +155,12 @@ class _UserInfoPageState extends State<UserInfoPage>
                               const UserToolBar(),
                               SizedBox(height: Adapt.pt(18)),
                               CardItemMode(
-                                songSheetInfo: songSheetInfo.isNotEmpty
-                                    ? songSheetInfo[0]
-                                    : {},
-                                isHeartRate: true,
-                              ),
-                              const SizedBox(height: 12),
+                                  songSheetInfo: songSheetInfo.isNotEmpty
+                                      ? songSheetInfo[0]
+                                      : {},
+                                  isHeartRate: true,
+                                  modalList: likeModalList),
+                              SizedBox(height: Adapt.pt(12)),
                             ],
                           ),
                         ),
@@ -180,26 +181,26 @@ class _UserInfoPageState extends State<UserInfoPage>
                           labelColor: Colors.black,
                           unselectedLabelColor: const Color(0xff8d929c),
                           // 选择的样式
-                          labelStyle: const TextStyle(
-                            fontSize: 16,
+                          labelStyle: TextStyle(
+                            fontSize: Adapt.pt(16),
                             fontWeight: FontWeight.bold,
                           ),
                           // 未选中的样式
-                          unselectedLabelStyle: const TextStyle(
-                            fontSize: 16,
+                          unselectedLabelStyle: TextStyle(
+                            fontSize: Adapt.pt(16),
                           ),
-                          indicator: const UnderlineTabIndicator(
+                          indicator: UnderlineTabIndicator(
                             borderSide: BorderSide(
-                              color: Color(0xfff44336),
-                              width: 4.0, // 指示器厚度
+                              color: const Color(0xfff44336),
+                              width: Adapt.pt(4), // 指示器厚度
                             ),
                             insets: EdgeInsets.symmetric(
-                                vertical: 6.0), // 设置指示器的水平间距
+                                vertical: Adapt.pt(6)), // 设置指示器的水平间距
                           ),
                           isScrollable: true,
                           indicatorSize: TabBarIndicatorSize.label,
                           indicatorPadding:
-                              const EdgeInsets.only(left: 24.0, right: 24.0),
+                              EdgeInsets.symmetric(horizontal: Adapt.pt(24)),
                           tabs: const <Tab>[
                             Tab(text: '创建歌单'),
                             Tab(text: '收藏歌单'),
@@ -219,6 +220,12 @@ class _UserInfoPageState extends State<UserInfoPage>
                               ),
                               ExtendedVisibilityDetector(
                                 uniqueKey: const Key('Tab1'),
+                                child: Container(
+                                  child: _setListData(),
+                                ),
+                              ),
+                              ExtendedVisibilityDetector(
+                                uniqueKey: const Key('Tab2'),
                                 child: Container(
                                   child: _setListData(),
                                 ),
@@ -264,12 +271,12 @@ class _UserInfoPageState extends State<UserInfoPage>
     return ListView(
       key: const PageStorageKey<String>('二手房'),
       children: [
-        const SizedBox(height: 6),
-        buildCard("创建歌单(${getSongCount(true)}个)", songSheetInfo[1]),
-        const SizedBox(height: 18),
+        SizedBox(height: Adapt.pt(6)),
+        buildCard("创建歌单(${getSongCount(true)}个)", songSheetInfo.isNotEmpty ? songSheetInfo[1] : {}),
+        SizedBox(height: Adapt.pt(18)),
         buildCard("收藏歌单(${getSongCount(false)}个)",
             songSheetInfo.where((e) => e['subscribed']).toList()),
-        const SizedBox(height: 12),
+        SizedBox(height: Adapt.pt(12)),
       ],
     );
   }
@@ -277,13 +284,14 @@ class _UserInfoPageState extends State<UserInfoPage>
   Widget buildCard(String name, info) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(Adapt.pt(12)),
         color: Colors.white,
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
+            padding: EdgeInsets.only(
+                top: Adapt.pt(12), left: Adapt.pt(12), right: Adapt.pt(12)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -291,12 +299,54 @@ class _UserInfoPageState extends State<UserInfoPage>
                   name,
                   style: const TextStyle(color: Color(0xffa6a5aa)),
                 ),
-                const Row(
+                Row(
                   children: [
-                    Icon(
-                      Icons.more_vert,
-                      color: Color(0xffa6a5aa),
-                    ),
+                    info is Map
+                        ? InkWell(
+                            onTap: () {},
+                            child: const Icon(
+                              Icons.add,
+                              color: Color(0xffa6a5aa),
+                            ),
+                          )
+                        : Container(),
+                    SizedBox(width: Adapt.pt(12)),
+                    InkWell(
+                      onTap: () {
+                        ShowModalBottomSheet.showBottomModal(context,
+                            modalList: info is Map
+                                ? [
+                                    {
+                                      "name": "新建歌单",
+                                      "icon": Icons.add_circle,
+                                    },
+                                    {
+                                      "name": "管理歌单",
+                                      "icon": Icons.edit_note,
+                                    },
+                                    {
+                                      "name": "一键导入外部音乐",
+                                      "icon": Icons.change_circle,
+                                    },
+                                    {
+                                      "name": "恢复歌单",
+                                      "icon": Icons.history,
+                                    },
+                                  ]
+                                : [
+                                    {
+                                      "name": "管理歌单",
+                                      "icon": Icons.edit_note,
+                                    },
+                                  ], fn: (int index, Map item) {
+                          print('111111111,$item');
+                        }, name: name);
+                      },
+                      child: const Icon(
+                        Icons.more_vert,
+                        color: Color(0xffa6a5aa),
+                      ),
+                    )
                   ],
                 )
               ],
@@ -305,34 +355,117 @@ class _UserInfoPageState extends State<UserInfoPage>
           if (info is Map)
             Column(
               children: [
-                CardItemMode(songSheetInfo: info.isNotEmpty ? info : {}),
-                Row(
-                  children: [
-                    Container(
-                      width: Adapt.pt(42),
-                      height: Adapt.pt(42),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(Adapt.pt(12)),
-                        image: const DecorationImage(
-                          image: AssetImage(AssetsImages.myImportPng),
-                          fit: BoxFit.cover,
+                CardItemMode(
+                    songSheetInfo: info.isNotEmpty ? info : {},
+                    modalList: modalList),
+                Container(
+                  padding: EdgeInsets.only(
+                      left: Adapt.pt(12),
+                      right: Adapt.pt(12),
+                      bottom: Adapt.pt(12)),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: Adapt.pt(42),
+                        height: Adapt.pt(42),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(Adapt.pt(12)),
+                          image: const DecorationImage(
+                            image: AssetImage(AssetsImages.myImportPng),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      "一键导入外部音乐",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                )
+                      SizedBox(width: Adapt.pt(12)),
+                      const Text(
+                        "一键导入外部音乐",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             )
           else
             for (int i = 0; i < info.length; i++)
-              CardItemMode(songSheetInfo: info.isNotEmpty ? info[i] : {})
+              CardItemMode(
+                  songSheetInfo: info.isNotEmpty ? info[i] : {},
+                  modalList: otherModalList)
         ],
       ),
     );
   }
+
+  // 我喜欢底部弹出数据
+  List likeModalList = [
+    {
+      "name": "Wifi下自动下载歌曲",
+      "description": "下载会员歌曲将占用当月付费下载额度",
+      "icon": Icons.arrow_circle_down,
+      "isSwitch": false,
+      "switchChange": (bool val) {
+        print('11111111111,$val');
+      },
+    },
+    {
+      "name": "添加歌曲",
+      "icon": Icons.add_circle,
+    },
+    {
+      "name": "编辑歌曲排序",
+      "icon": Icons.change_circle,
+    },
+    {"name": "清空下载文件", "icon": Icons.delete, "mark": 'empty'},
+    {
+      "name": "恢复歌单",
+      "icon": Icons.history,
+    },
+  ];
+
+  // 年度歌单底部弹出数据
+  List modalList = [
+    {
+      "name": "Wifi下自动下载歌曲",
+      "description": "下载会员歌曲将占用当月付费下载额度",
+      "icon": Icons.arrow_circle_down,
+      "isSwitch": false,
+      "switchChange": (bool val) {
+        print('11111111111,$val');
+      },
+    },
+    {
+      "name": "添加歌曲",
+      "icon": Icons.add_circle,
+    },
+    {
+      "name": "编辑歌单信息",
+      "icon": Icons.edit_note,
+    },
+    {
+      "name": "更改歌曲排序",
+      "icon": Icons.change_circle,
+    },
+    {"name": "清空下载文件", "icon": Icons.delete, "mark": 'empty'},
+    {
+      "name": "删除歌单",
+      "icon": Icons.delete_sweep,
+    },
+    {
+      "name": "恢复歌单",
+      "icon": Icons.history,
+    },
+  ];
+
+  // 其他歌单底部弹出数据
+  List otherModalList = [
+    {
+      "name": "选择歌曲排序",
+      "icon": Icons.change_circle,
+    },
+    {"name": "清空下载文件", "icon": Icons.delete, "mark": 'empty'},
+    {
+      "name": "举报",
+      "icon": Icons.warning,
+    },
+  ];
 }

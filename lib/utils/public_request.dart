@@ -22,7 +22,7 @@ import 'request.dart';
 Future<String> getMusicUrl(int id) async {
   Map result = await Http.get('getMusicList',
       params: {'id': id});
-  return urlConversion(result['data'][0]['url']);
+  return result['data'][0]['url'] != null ? urlConversion(result['data'][0]['url']) : '';
 }
 
 String urlConversion(String path) {
