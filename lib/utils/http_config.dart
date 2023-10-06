@@ -17,6 +17,7 @@ const Map urlPath = {
   'getPlaylistTrack': '/playlist/track/all', // 获取歌单内歌曲
   'getRecommendResource': '/recommend/resource', // 获取每日推荐
   'getSongComment': '/comment/new', // 获取歌单评论
+  'setCommentLike': '/comment/like', // 给评论点赞
 };
 
 // content-type

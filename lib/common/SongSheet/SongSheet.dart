@@ -53,7 +53,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
     传入limit=50&offset=50，你会得到第51-100首歌曲
   */
   Map pageQuery = {
-    'limit': 9999,
+    'limit': 20,
     'offset': 0,
   };
   // 歌单歌曲
@@ -72,7 +72,7 @@ class _SongSheetPageState extends State<SongSheetPage> {
   Future<void> _loadMore() async {
     // 模拟加载更多操作
     await Future.delayed(const Duration(milliseconds: 300));
-    // pageQuery['offset'] += 99999;
+    pageQuery['offset'] += 20;
     // setState(() {});
     getPlaylistTrack();
     _controller.finishLoad(IndicatorResult.success, true);
@@ -143,17 +143,17 @@ class _SongSheetPageState extends State<SongSheetPage> {
         
           如果下面还有歌曲，就让滚动到最下面
          */
-        if (pageQuery['offset'] != 0 &&
-            (pageQuery['offset'] + pageQuery['limit']) <
-                widget.songSheetInfo['trackCount']) {
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 10),
-              curve: Curves.easeOut,
-            );
-          });
-        }
+        // if (pageQuery['offset'] != 0 &&
+        //     (pageQuery['offset'] + pageQuery['limit']) <
+        //         widget.songSheetInfo['trackCount']) {
+        //   SchedulerBinding.instance.addPostFrameCallback((_) {
+        //     _scrollController.animateTo(
+        //       _scrollController.position.maxScrollExtent,
+        //       duration: const Duration(milliseconds: 10),
+        //       curve: Curves.easeOut,
+        //     );
+        //   });
+        // }
         return;
       }
       Toast.show(context: context, message: breakWord(res.toString()));

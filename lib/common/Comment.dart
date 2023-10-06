@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../common/Adapt.dart';
 import '../utils/request.dart';
+import 'HiddenText.dart';
+import 'Lickbutton/index.dart';
 import 'LoadStateLayout.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'SimpleEasyRefresher.dart';
@@ -215,6 +217,7 @@ class _CommentListState extends State<CommentList> {
       'sortType': sortType,
       'pageNo': sortType == 1 ? 1 : pageQuery['pageNo'],
       'pageSize': sortType == 1 ? 9999 : pageQuery['pageSize'],
+      'timestamp': DateTime.now().millisecondsSinceEpoch
     };
     sortType == 3 && commentList.isNotEmpty
         ? queryParams['cursor'] = commentList[commentList.length - 1]['time']
@@ -227,7 +230,7 @@ class _CommentListState extends State<CommentList> {
       if (result['comments'].isEmpty) {
         _layoutState = LoadState.empty;
       } else {
-        if (widget.songSheetInfo['trackCount'] <=
+        if (widget.commentCount <=
             (pageQuery['pageNo'] * pageQuery['pageSize'])) {
           isRefresh = true;
         }
@@ -441,20 +444,12 @@ class _CommentListState extends State<CommentList> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: Adapt.pt(2)),
-                        child: Text("${commentList[index]['likedCount']}"),
-                      ),
-                      SizedBox(width: Adapt.pt(6)),
-                      Image.asset(
-                        AssetsImages.lickPng,
-                        width: Adapt.pt(15),
-                        color: Colors.black,
-                      ),
-                    ],
-                  )
+                  LikeButton(
+                    likedCount: commentList[index]['likedCount'],
+                    liked: commentList[index]['liked'],
+                    fn: lickButtonClick,
+                    index: index,
+                  ),
                 ],
               ),
               SizedBox(height: Adapt.pt(6)),
@@ -462,13 +457,48 @@ class _CommentListState extends State<CommentList> {
                 children: [
                   SizedBox(width: Adapt.pt(48)),
                   Expanded(
-                    child: Text(
-                      commentList[index]['content'],
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w300,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          commentList[index]['content'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                        commentList[index]['beReplied'] != null
+                            ? Row(
+                                children: [
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        left: BorderSide(
+                                          width: 1,
+                                          color: Color(
+                                            0xffcccccc,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: HiddenText(
+                                      leftText:
+                                          "@${commentList[index]['beReplied'][0]['user']['nickname']}: ",
+                                      text:
+                                          "${commentList[index]['beReplied'][0]['content']}",
+                                      maxLines: 2,
+                                      style: TextStyle(
+                                        color: Colors.black.withOpacity(0.4),
+                                        fontSize: 14,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                      ],
                     ),
                   ),
                 ],
@@ -521,5 +551,20 @@ class _CommentListState extends State<CommentList> {
         );
       },
     );
+  }
+
+  void lickButtonClick(int j) {
+    commentList[j]['liked'] = !commentList[j]['liked'];
+    commentList[j]['likedCount'] = commentList[j]['liked']
+        ? commentList[j]['likedCount'] + 1
+        : commentList[j]['likedCount'] - 1;
+    setState(() {});
+    // 点赞
+    Http.post('setCommentLike', params: {}, pathParams: {
+      'type': widget.type,
+      'id': widget.songSheetInfo['id'],
+      't': commentList[j]['liked'] ? 1 : 0,
+      'cid': commentList[j]['commentId']
+    });
   }
 }
