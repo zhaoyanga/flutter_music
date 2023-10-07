@@ -213,21 +213,21 @@ class _UserInfoPageState extends State<UserInfoPage>
                             physics: const NeverScrollableScrollPhysics(),
                             children: <Widget>[
                               ExtendedVisibilityDetector(
-                                uniqueKey: const Key('Tab0'),
+                                uniqueKey: const Key('创建歌单'),
                                 child: Container(
-                                  child: _setListData(),
+                                  child: _setListData('创建歌单'),
                                 ),
                               ),
                               ExtendedVisibilityDetector(
-                                uniqueKey: const Key('Tab1'),
+                                uniqueKey: const Key('收藏歌单'),
                                 child: Container(
-                                  child: _setListData(),
+                                  child: _setListData('收藏歌单'),
                                 ),
                               ),
                               ExtendedVisibilityDetector(
-                                uniqueKey: const Key('Tab2'),
+                                uniqueKey: const Key('歌单助手'),
                                 child: Container(
-                                  child: _setListData(),
+                                  child: _setListData('歌单助手'),
                                 ),
                               ),
                             ],
@@ -267,16 +267,19 @@ class _UserInfoPageState extends State<UserInfoPage>
   }
 
   //tabarView里边的列表展示
-  Widget _setListData() {
+  Widget _setListData(String key) {
     return ListView(
-      key: const PageStorageKey<String>('二手房'),
+      key: PageStorageKey<String>(key),
       children: [
-        SizedBox(height: Adapt.pt(6)),
-        buildCard("创建歌单(${getSongCount(true)}个)", songSheetInfo.isNotEmpty ? songSheetInfo[1] : {}),
+        if (key == '创建歌单') SizedBox(height: Adapt.pt(6)),
+        if (key == '创建歌单')
+          buildCard("创建歌单(${getSongCount(true)}个)",
+              songSheetInfo.isNotEmpty ? songSheetInfo[1] : {}),
+        if (key == '收藏歌单' || key == '创建歌单') SizedBox(height: Adapt.pt(12)),
+        if (key == '收藏歌单' || key == '创建歌单')
+          buildCard("收藏歌单(${getSongCount(false)}个)",
+              songSheetInfo.where((e) => e['subscribed']).toList()),
         SizedBox(height: Adapt.pt(18)),
-        buildCard("收藏歌单(${getSongCount(false)}个)",
-            songSheetInfo.where((e) => e['subscribed']).toList()),
-        SizedBox(height: Adapt.pt(12)),
       ],
     );
   }

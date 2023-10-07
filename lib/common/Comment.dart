@@ -1,4 +1,8 @@
 import 'dart:ui';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../blob/app_config.dart';
+import '../blob/app_config_blob.dart';
 import '../utils/public_request.dart';
 import 'Assets_Images.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +14,7 @@ import 'Lickbutton/index.dart';
 import 'LoadStateLayout.dart';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'SimpleEasyRefresher.dart';
+import 'SongSheet/SongSheet.dart';
 
 class CommentModalBottomSheet {
   static void showBottomModal(
@@ -18,6 +23,9 @@ class CommentModalBottomSheet {
     required Map songSheetInfo,
     required int commentCount,
     required int type,
+    required String title,
+    required List modalList,
+    int? id,
   }) {
     showModalBottomSheet(
       context: context,
@@ -36,7 +44,7 @@ class CommentModalBottomSheet {
               Container(
                 padding: const EdgeInsets.all(12),
                 child: Text(
-                  "评论($commentCount)",
+                  "$title($commentCount)",
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: Adapt.pt(16),
@@ -47,104 +55,187 @@ class CommentModalBottomSheet {
               Padding(
                 padding:
                     EdgeInsets.only(left: Adapt.pt(12), bottom: Adapt.pt(12)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
+                child: title == '评论'
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            width: Adapt.pt(72),
-                            height: Adapt.pt(72),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(Adapt.pt(6)),
-                              image: DecorationImage(
-                                image:
-                                    NetworkImage(songSheetInfo['coverImgUrl']),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: Adapt.pt(12)),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: Adapt.pt(3),
-                                      ),
-                                      margin: EdgeInsets.only(top: Adapt.pt(4)),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.red),
-                                        borderRadius: BorderRadius.circular(
-                                          Adapt.pt(3),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        "歌单",
-                                        style: TextStyle(
-                                          fontSize: Adapt.pt(8),
-                                          color: Colors.red,
-                                        ),
-                                      ),
+                                Container(
+                                  width: Adapt.pt(72),
+                                  height: Adapt.pt(72),
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(Adapt.pt(6)),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                          songSheetInfo['coverImgUrl']),
+                                      fit: BoxFit.cover,
                                     ),
-                                    songSheetInfo['name'].startsWith("【")
-                                        ? Container()
-                                        : SizedBox(width: Adapt.pt(6)),
-                                    Expanded(
-                                      child: Text(
-                                        songSheetInfo['name'],
-                                        style: TextStyle(
-                                          fontSize: Adapt.pt(14),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                                SizedBox(height: Adapt.pt(6)),
-                                Text.rich(
-                                  TextSpan(
-                                    style: TextStyle(
-                                      fontSize: Adapt.pt(12),
-                                    ),
+                                SizedBox(width: Adapt.pt(12)),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const TextSpan(text: "by "),
-                                      TextSpan(
-                                        text: songSheetInfo['creator']
-                                            ['nickname'],
-                                        style: const TextStyle(
-                                          color: Colors.blue,
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: Adapt.pt(3),
+                                            ),
+                                            margin: EdgeInsets.only(
+                                                top: Adapt.pt(4)),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1, color: Colors.red),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                Adapt.pt(3),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              "歌单",
+                                              style: TextStyle(
+                                                fontSize: Adapt.pt(8),
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                          songSheetInfo['name'].startsWith("【")
+                                              ? Container()
+                                              : SizedBox(width: Adapt.pt(6)),
+                                          Expanded(
+                                            child: Text(
+                                              songSheetInfo['name'],
+                                              style: TextStyle(
+                                                fontSize: Adapt.pt(14),
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: Adapt.pt(6)),
+                                      Text.rich(
+                                        TextSpan(
+                                          style: TextStyle(
+                                            fontSize: Adapt.pt(12),
+                                          ),
+                                          children: [
+                                            const TextSpan(text: "by "),
+                                            TextSpan(
+                                              text: songSheetInfo['creator']
+                                                  ['nickname'],
+                                              style: const TextStyle(
+                                                color: Colors.blue,
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      BlocBuilder<AppConfigBloc, AppConfig>(
+                                    builder: (_, state) => SongSheetPage(
+                                      states: state,
+                                      isNoCachePage: true,
+                                      songSheetInfo: songSheetInfo,
+                                      modalList: modalList,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                              size: Adapt.pt(14),
+                              color: const Color(
+                                0xffcccccc,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: Adapt.pt(36),
+                                height: Adapt.pt(36),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: NetworkImage(urlConversion(
+                                        songSheetInfo['user']['avatarUrl'])),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: Adapt.pt(12)),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(songSheetInfo['user']['nickname']),
+                                      SizedBox(width: Adapt.pt(3)),
+                                      songSheetInfo['user']['vipRights'] !=
+                                                  null &&
+                                              songSheetInfo['user']['vipRights']
+                                                      ['associator'] !=
+                                                  null
+                                          ? Image.network(
+                                              urlConversion(
+                                                  songSheetInfo['user']
+                                                              ['vipRights']
+                                                          ['associator']
+                                                      ['iconUrl']),
+                                              height: Adapt.pt(13),
+                                            )
+                                          : Container(),
+                                    ],
+                                  ),
+                                  SizedBox(height: Adapt.pt(3)),
+                                  Text(
+                                    "${songSheetInfo['timeStr']} ${songSheetInfo['ipLocation']['location']}",
+                                    style: TextStyle(
+                                      fontSize: Adapt.pt(8),
+                                      color: const Color(0xffa6a6a6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: Adapt.pt(12)),
+                          Text(
+                            songSheetInfo['content'],
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.arrow_forward_ios,
-                        size: Adapt.pt(14),
-                        color: const Color(
-                          0xffcccccc,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ),
               Container(
                 height: Adapt.pt(6),
@@ -155,10 +246,13 @@ class CommentModalBottomSheet {
               ),
               Expanded(
                 child: CommentList(
-                    songSheetInfo:
-                        songSheetInfo.isNotEmpty ? songSheetInfo : {},
-                    commentCount: commentCount,
-                    type: type),
+                  songSheetInfo: songSheetInfo.isNotEmpty ? songSheetInfo : {},
+                  commentCount: commentCount,
+                  type: type,
+                  title: title,
+                  id: id,
+                  modalList: modalList,
+                ),
               ),
             ],
           ),
@@ -169,14 +263,21 @@ class CommentModalBottomSheet {
 }
 
 class CommentList extends StatefulWidget {
-  const CommentList(
-      {super.key,
-      required this.songSheetInfo,
-      required this.commentCount,
-      required this.type});
+  const CommentList({
+    super.key,
+    required this.songSheetInfo,
+    required this.commentCount,
+    required this.type,
+    required this.title,
+    required this.modalList,
+    this.id,
+  });
   final Map songSheetInfo;
   final int commentCount;
   final int type;
+  final String title;
+  final int? id;
+  final List modalList;
   @override
   State<CommentList> createState() => _CommentListState();
 }
@@ -205,36 +306,53 @@ class _CommentListState extends State<CommentList> {
     'pageSize': 20,
     'pageNo': 1,
   };
+  // 评论的评论
+  int limit = 20;
   // 是否没数据了
   bool isRefresh = false;
+  // 总数
+  int totalCount = 0;
 
   // 获取歌单评论
   void getSongComment() async {
     _layoutState = LoadState.loading;
     Map queryParams = {
       'type': widget.type,
-      'id': widget.songSheetInfo['id'],
-      'sortType': sortType,
-      'pageNo': sortType == 1 ? 1 : pageQuery['pageNo'],
-      'pageSize': sortType == 1 ? 9999 : pageQuery['pageSize'],
-      'timestamp': DateTime.now().millisecondsSinceEpoch
+      'id': widget.title == '评论' ? widget.songSheetInfo['id'] : widget.id,
+      // 'timestamp': DateTime.now().millisecondsSinceEpoch
     };
-    sortType == 3 && commentList.isNotEmpty
-        ? queryParams['cursor'] = commentList[commentList.length - 1]['time']
-        : null;
-    Http.post('getSongComment', pathParams: queryParams, params: {})
-        .then((res) {
+    if (widget.title == '评论') {
+      queryParams['pageNo'] = sortType == 1 ? 1 : pageQuery['pageNo'];
+      queryParams['pageSize'] = sortType == 1 ? 9999 : pageQuery['pageSize'];
+      queryParams['sortType'] = sortType;
+      sortType == 3 && commentList.isNotEmpty
+          ? queryParams['cursor'] = commentList[commentList.length - 1]['time']
+          : null;
+    } else {
+      queryParams['limit'] = limit;
+      queryParams['parentCommentId'] = widget.songSheetInfo['commentId'];
+      commentList.isNotEmpty
+          ? queryParams['time'] = commentList[commentList.length - 1]['time']
+          : null;
+    }
+    Http.post(widget.title == '评论' ? 'getSongComment' : 'getCommentFloor',
+        pathParams: queryParams, params: {}).then((res) {
       Future.delayed(const Duration(milliseconds: 1000));
       if (res['code'] != 200) return;
       Map result = res['data'];
-      if (result['comments'].isEmpty) {
+      if (commentList.isEmpty && result['comments'].isEmpty) {
         _layoutState = LoadState.empty;
       } else {
-        if (widget.commentCount <=
-            (pageQuery['pageNo'] * pageQuery['pageSize'])) {
+        if (widget.title == '评论' &&
+            widget.commentCount <=
+                (pageQuery['pageNo'] * pageQuery['pageSize'])) {
+          isRefresh = true;
+        }
+        if (widget.title == '回复' && widget.commentCount <= limit) {
           isRefresh = true;
         }
         commentList.addAll(result['comments']);
+        widget.title == '回复' ? totalCount = result['totalCount'] : null;
         _layoutState = LoadState.success;
       }
       setState(() {});
@@ -250,7 +368,7 @@ class _CommentListState extends State<CommentList> {
   Future<void> _loadMore() async {
     // 模拟加载更多操作
     await Future.delayed(const Duration(milliseconds: 300));
-    pageQuery['pageNo'] += 1;
+    widget.title == '评论' ? pageQuery['pageNo'] += 1 : limit += 20;
     getSongComment();
     _controller.finishLoad(IndicatorResult.success, true);
   }
@@ -328,30 +446,41 @@ class _CommentListState extends State<CommentList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "评论区",
+                      widget.title == '评论' ? "评论区" : "全部回复 $totalCount",
                       style: TextStyle(
                         fontSize: Adapt.pt(12),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Row(
-                      children: [
-                        for (int i = 0; i < options.length; i++)
-                          Row(
-                            children: [
-                              _buildOptionItem(i),
-                              SizedBox(width: Adapt.pt(6)),
-                              i == 2
-                                  ? Container()
-                                  : Row(
-                                      children: [
-                                        const Text("|"),
-                                        SizedBox(width: Adapt.pt(6)),
-                                      ],
-                                    ),
+                      children: widget.title == '评论'
+                          ? [
+                              for (int i = 0; i < options.length; i++)
+                                Row(
+                                  children: [
+                                    _buildOptionItem(i),
+                                    SizedBox(width: Adapt.pt(6)),
+                                    i == 2
+                                        ? Container()
+                                        : Row(
+                                            children: [
+                                              const Text("|"),
+                                              SizedBox(width: Adapt.pt(6)),
+                                            ],
+                                          ),
+                                  ],
+                                ),
+                            ]
+                          : [
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    commentList = commentList.reversed.toList();
+                                  });
+                                },
+                                child: const Icon(Icons.unfold_more),
+                              )
                             ],
-                          ),
-                      ],
                     ),
                   ],
                 )
@@ -376,7 +505,9 @@ class _CommentListState extends State<CommentList> {
   Widget _buildCommentList() {
     return SimpleEasyRefresher(
       easyRefreshController: _controller,
-      onLoad: sortType == 1 || isRefresh ? null : _loadMore,
+      onLoad: (widget.title == '评论' && sortType == 1) || isRefresh
+          ? null
+          : _loadMore,
       childBuilder: (context, physics) {
         return _buildCommentItem(physics);
       },
@@ -466,36 +597,46 @@ class _CommentListState extends State<CommentList> {
                             fontWeight: FontWeight.w300,
                           ),
                         ),
-                        commentList[index]['beReplied'] != null
-                            ? Row(
-                                children: [
-                                  Container(
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        left: BorderSide(
-                                          width: 1,
-                                          color: Color(
-                                            0xffcccccc,
-                                          ),
+                        commentList[index]['beReplied'] != null &&
+                                widget.songSheetInfo['content'] !=
+                                    commentList[index]['beReplied'][0]
+                                        ['content']
+                            ? Container(
+                                margin: EdgeInsets.only(
+                                    top: Adapt.pt(12), bottom: Adapt.pt(3)),
+                                padding: EdgeInsets.only(
+                                    top: Adapt.pt(3),
+                                    bottom: Adapt.pt(3),
+                                    right: Adapt.pt(6)),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    left: BorderSide(
+                                      width: Adapt.pt(2),
+                                      color: const Color(
+                                        0xffcccccc,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    SizedBox(width: Adapt.pt(6)),
+                                    Expanded(
+                                      child: HiddenText(
+                                        leftText:
+                                            "@${commentList[index]['beReplied'][0]['user']['nickname']}: ",
+                                        text:
+                                            "${commentList[index]['beReplied'][0]['content']}",
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                          color: Colors.black.withOpacity(0.4),
+                                          fontSize: Adapt.pt(14),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: HiddenText(
-                                      leftText:
-                                          "@${commentList[index]['beReplied'][0]['user']['nickname']}: ",
-                                      text:
-                                          "${commentList[index]['beReplied'][0]['content']}",
-                                      maxLines: 2,
-                                      style: TextStyle(
-                                        color: Colors.black.withOpacity(0.4),
-                                        fontSize: 14,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               )
                             : Container(),
                       ],
@@ -508,25 +649,40 @@ class _CommentListState extends State<CommentList> {
                   ? Column(
                       children: [
                         SizedBox(height: Adapt.pt(6)),
-                        Row(
-                          children: [
-                            SizedBox(width: Adapt.pt(48)),
-                            Flexible(
-                              child: Text(
-                                "${commentList[index]['replyCount']} 条回复",
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: Adapt.pt(12),
+                        InkWell(
+                          onTap: () {
+                            CommentModalBottomSheet.showBottomModal(
+                              context,
+                              fn: () {},
+                              id: widget.songSheetInfo['id'],
+                              songSheetInfo: commentList[index],
+                              commentCount:
+                                  commentList[index]['replyCount'] ?? 0,
+                              type: 2,
+                              title: "回复",
+                              modalList: widget.modalList,
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(width: Adapt.pt(48)),
+                              Flexible(
+                                child: Text(
+                                  "${commentList[index]['replyCount']} 条回复",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: Adapt.pt(12),
+                                  ),
                                 ),
                               ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: Adapt.pt(12),
-                              color: Colors.blue,
-                            )
-                          ],
-                        )
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: Adapt.pt(12),
+                                color: Colors.blue,
+                              )
+                            ],
+                          ),
+                        ),
                       ],
                     )
                   : Container(),
@@ -562,7 +718,7 @@ class _CommentListState extends State<CommentList> {
     // 点赞
     Http.post('setCommentLike', params: {}, pathParams: {
       'type': widget.type,
-      'id': widget.songSheetInfo['id'],
+      'id': widget.title == '评论' ? widget.songSheetInfo['id'] : widget.id,
       't': commentList[j]['liked'] ? 1 : 0,
       'cid': commentList[j]['commentId']
     });

@@ -15,7 +15,7 @@ class HiddenText extends StatefulWidget {
       this.style,
       this.maxLines,
       this.leftText,
-      this.collapseText = '  收起',
+      this.collapseText = '    收起',
       this.expandText = ' 展开'})
       : super(key: key);
 

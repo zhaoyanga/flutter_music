@@ -18,6 +18,7 @@ const Map urlPath = {
   'getRecommendResource': '/recommend/resource', // 获取每日推荐
   'getSongComment': '/comment/new', // 获取歌单评论
   'setCommentLike': '/comment/like', // 给评论点赞
+  'getCommentFloor': '/comment/floor', // 获取评论的回复
 };
 
 // content-type

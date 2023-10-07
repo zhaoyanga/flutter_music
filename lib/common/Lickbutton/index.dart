@@ -52,20 +52,25 @@ class _LikeButtonState extends State<LikeButton>
           children: [
             Padding(
               padding: EdgeInsets.only(top: Adapt.pt(2)),
-              child: Text("${widget.likedCount}",style:TextStyle(
-                color:widget.liked ? Colors.red : Colors.black,
-              )),
+              child: Text(
+                widget.likedCount > 0 ? "${widget.likedCount}" : '',
+                style: TextStyle(
+                  color: widget.liked ? Colors.red : Colors.black,
+                ),
+              ),
             ),
             SizedBox(width: Adapt.pt(6)),
-            widget.liked ? Image.asset(
-                            AssetsImages.lickPng,
-                            width: Adapt.pt(15),
-                            color: Colors.red,
-                          ) : Image.asset(
-                            AssetsImages.lickPng,
-                            width: Adapt.pt(15),
-                            color: Colors.black,
-                          )
+            widget.liked
+                ? Image.asset(
+                    AssetsImages.lickPng,
+                    width: Adapt.pt(15),
+                    color: Colors.red,
+                  )
+                : Image.asset(
+                    AssetsImages.lickPng,
+                    width: Adapt.pt(15),
+                    color: Colors.black,
+                  )
           ],
         ),
       ),

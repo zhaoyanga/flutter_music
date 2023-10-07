@@ -492,6 +492,8 @@ class _SongSheetPageState extends State<SongSheetPage> {
                                     commentCount:
                                         _playListInfo['commentCount'] ?? 0,
                                     type: 2,
+                                    title:"评论",
+                                    modalList:widget.modalList,
                                   );
                                 },
                                 icon: Icons.textsms,
